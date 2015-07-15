@@ -192,6 +192,10 @@ footer {
   div.wrapper {
     width:auto;
     margin:0;
+    border: 1px solid #e8e8e8;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.80);
+  padding: 20px 20px;
   }
   
   header, section, footer {
