@@ -253,3 +253,28 @@ footer {
     color:#444;
   }
 }
+
+
+#bbackground {
+  left: 0px;
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -999;
+  opacity: 0.8;
+  background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAACJJREFUeNpiYGBgcABihv///zPgYcOBAyE25QqGrHUAAQYAP/8PuB+VLEEAAAAASUVORK5CYII=');
+}
+
+#abackground {
+  left: 0px;
+  top: 0px;
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: -1000;
+  background: transparent;
+  background: url('https://blog.nekohand.moe/static/images/bg/booksbg.jpg') no-repeat;
+}
