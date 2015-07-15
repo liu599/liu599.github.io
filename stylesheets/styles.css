@@ -196,6 +196,7 @@ footer {
   border-radius: 3px;
   background: rgba(255,255,255,0.80);
   padding: 20px 20px;
+  overflow: auto;
   }
   
   header, section, footer {
