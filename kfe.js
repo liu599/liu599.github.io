@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name       绯月表情增强插件2016
 // @namespace  
-// @version    1.1.1
+// @version    1.1.5
 // @description 简化版~>_<~KF论坛专用的回复表情/插图/颜文字插件, 在发帖时快速输入自定义表情和论坛BBCODE
 // @icon        https://blog.nekohand.moe/archive/favicon.ico
 // @homepage    https://greasyfork.org/zh-CN/scripts/17063-%E7%BB%AF%E6%9C%88%E8%A1%A8%E6%83%85%E5%A2%9E%E5%BC%BA%E6%8F%92%E4%BB%B62016
@@ -28,7 +28,8 @@ var ItemTitleArray = new Array('0.kf',
                                '3.LL小',
                                '4.LL大',
                                '5.AC娘',
-                               '6.百合');
+                               '6.百合',
+                               '7.B站');
 // 链接ID, 对应, 100101开始的整数。
 var loadTitleArray = [];
 var ItemLength = ItemTitleArray.length;
@@ -40,7 +41,8 @@ var loadTitleArray = new Array(100101,
                                100104,
                                100105,
                                100106,
-                               100107);
+                               100107,
+                               100108);
                               
 //不显示的元素位置
 var itemDoNotShow =[];
@@ -266,7 +268,25 @@ for(var j = 0; j < 43; j++) {
 }
 
 
+// B站和tora酱
+// B站
+var w4 = [];
 
+for(var j = 0; j < 16; j++) {
+   w4[j] = 'http://smile.nekohand.moe/blogAcc/LoveliveEmotion01/EmCol/BiliBili/2233 (' +
+        (j+1) + ').gif';
+}
+for(var j = 16; j < 30; j++) {
+   w4[j] = 'http://smile.nekohand.moe/blogAcc/LoveliveEmotion01/EmCol/BiliBili/bilibiliTV (' +
+        (j+1-17) + ').png';
+}
+// tora酱
+var w5 = [];
+
+for(var j = 0; j < 14; j++) {
+    w5[j] = 'http://smile.nekohand.moe/blogAcc/LoveliveEmotion01/EmCol/tora/0' +
+         ((j)>=9?(j+1):('0'+(j+1))) + '.jpg';
+}
 
 
 
@@ -295,6 +315,10 @@ function loadingHandler(loadindex, target){
             userInputImg(target, ACSmile2, ACSmile2, ACSmile2Title, returnImg, 50, 50);
             userInputImg(target, ACSmile1, ACSmile1, ACSmile1Title, returnImg, 50, 50);
             break;
+        case 8:
+            userInputImg(target, w4, w4, w4, returnImg, 50, 50);
+            userInputImg(target, w5, w5, w5, returnImg, 50, 50);
+            break;   
         case 2:
             userInputImg(target, w6, w6, '', returnImg, 100, 100);
             break;
