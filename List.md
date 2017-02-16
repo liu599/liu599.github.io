@@ -1,3 +1,5 @@
 ## Recording
 
-2017/02/16 +5000
+| Date | Value | Description | 
+|====
+| 2017/02/16  |  +5,000 | 注入 |
