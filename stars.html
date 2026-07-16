@@ -42,13 +42,17 @@
   }
   #q:focus { border-color: #39c; }
   .shown { display: inline-block; margin: 8px 0 2px; font-size: 13px; color: #999; }
-  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .filter-label { display: block; margin: 10px 0 4px; font-size: 12px; color: #999; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
   .pill {
     font-size: 12.5px; padding: 4px 10px; border-radius: 20px; border: 1px solid #ddd;
     background: #fff; color: #555; cursor: pointer; user-select: none; white-space: nowrap;
   }
   .pill:hover { border-color: #39c; color: #39c; }
   .pill.active { background: #39c; border-color: #39c; color: #fff; }
+  .pill.lang-pill.active { background: #2a9d8f; border-color: #2a9d8f; }
+  .pill.lang-pill:hover { border-color: #2a9d8f; color: #2a9d8f; }
+  .pill.lang-pill.active:hover { color: #fff; }
 
   /* category sections */
   .cat { margin-top: 30px; }
@@ -93,13 +97,16 @@
   <section class="controls">
     <input id="q" type="search" placeholder="搜索仓库名或描述…（例如 react、docker、vite）">
     <span class="shown" id="shown"></span>
+    <span class="filter-label">领域</span>
     <div class="pills" id="pills"></div>
+    <span class="filter-label">语言（二级）</span>
+    <div class="pills" id="lang-pills"></div>
   </section>
 
   <div id="list"></div>
 
   <footer>
-    数据来源：GitHub API（用户 star 列表）· 兴趣主题优先（含争议分组待确认）· 其余按主要语言分组
+    数据来源：GitHub API（用户 star 列表）· 兴趣主题优先 · 支持领域 + 语言二级筛选 · 其余按主要语言分组
   </footer>
 </div>
 
@@ -110,16 +117,35 @@ var DATA = {"total": 1073, "generated": "2026-07-16", "categories": [{"key": "ga
 (function () {
   var q = "";
   var curCat = "all";
+  var curLang = "all";
+  var C_FAMILY = { "C": 1, "C++": 1, "C#": 1 };
+  var C_FAMILY_LABEL = "C / C++ / C#";
 
   function esc(s) {
     return String(s).replace(/[&<>"']/g, function (c) {
       return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
   }
-  function matches(r) {
+  function langKey(l) {
+    if (!l) return "未标注";
+    if (C_FAMILY[l]) return C_FAMILY_LABEL;
+    return l;
+  }
+  function matchesQ(r) {
     if (!q) return true;
     var s = q.toLowerCase();
     return r.n.toLowerCase().indexOf(s) >= 0 || (r.d || "").toLowerCase().indexOf(s) >= 0;
+  }
+  function matchesLang(r) {
+    if (curLang === "all") return true;
+    return langKey(r.l) === curLang;
+  }
+  function matches(r) {
+    return matchesQ(r) && matchesLang(r);
+  }
+  function reposInCat(c) {
+    if (curCat !== "all" && c.key !== curCat) return [];
+    return c.repos;
   }
 
   document.getElementById("total").textContent = DATA.total;
@@ -141,8 +167,9 @@ var DATA = {"total": 1073, "generated": "2026-07-16", "categories": [{"key": "ga
     dist.appendChild(row);
   });
 
-  // pills
   var pills = document.getElementById("pills");
+  var langPills = document.getElementById("lang-pills");
+
   function buildPills() {
     pills.innerHTML = "";
     var all = document.createElement("span");
@@ -158,7 +185,57 @@ var DATA = {"total": 1073, "generated": "2026-07-16", "categories": [{"key": "ga
       pills.appendChild(p);
     });
   }
-  function setCat(k) { curCat = k; buildPills(); render(); }
+
+  function langCounts() {
+    var map = {};
+    var total = 0;
+    DATA.categories.forEach(function (c) {
+      reposInCat(c).forEach(function (r) {
+        // language pills ignore text search, so secondary options stay stable while typing
+        var k = langKey(r.l);
+        map[k] = (map[k] || 0) + 1;
+        total += 1;
+      });
+    });
+    return { map: map, total: total };
+  }
+
+  function buildLangPills() {
+    var info = langCounts();
+    var keys = Object.keys(info.map).sort(function (a, b) {
+      if (a === "未标注") return 1;
+      if (b === "未标注") return -1;
+      if (a === C_FAMILY_LABEL) return -1;
+      if (b === C_FAMILY_LABEL) return 1;
+      return info.map[b] - info.map[a] || a.localeCompare(b);
+    });
+    if (curLang !== "all" && !info.map[curLang]) curLang = "all";
+    langPills.innerHTML = "";
+    var all = document.createElement("span");
+    all.className = "pill lang-pill" + (curLang === "all" ? " active" : "");
+    all.textContent = "全部语言 " + info.total;
+    all.addEventListener("click", function () { setLang("all"); });
+    langPills.appendChild(all);
+    keys.forEach(function (k) {
+      var p = document.createElement("span");
+      p.className = "pill lang-pill" + (curLang === k ? " active" : "");
+      p.textContent = k + " · " + info.map[k];
+      p.addEventListener("click", function () { setLang(k); });
+      langPills.appendChild(p);
+    });
+  }
+
+  function setCat(k) {
+    curCat = k;
+    buildPills();
+    buildLangPills();
+    render();
+  }
+  function setLang(k) {
+    curLang = k;
+    buildLangPills();
+    render();
+  }
 
   var listEl = document.getElementById("list");
   function render() {
@@ -184,13 +261,20 @@ var DATA = {"total": 1073, "generated": "2026-07-16", "categories": [{"key": "ga
     });
     if (!html) html = '<p class="empty">没有匹配的仓库</p>';
     listEl.innerHTML = html;
-    document.getElementById("shown").textContent = "显示 " + shown + " / " + DATA.total + " 个";
+    var parts = ["显示 " + shown + " / " + DATA.total + " 个"];
+    if (curCat !== "all") {
+      var cat = DATA.categories.filter(function (c) { return c.key === curCat; })[0];
+      if (cat) parts.push("领域：" + cat.title);
+    }
+    if (curLang !== "all") parts.push("语言：" + curLang);
+    document.getElementById("shown").textContent = parts.join(" · ");
   }
 
   var input = document.getElementById("q");
   input.addEventListener("input", function () { q = input.value.trim(); render(); });
 
   buildPills();
+  buildLangPills();
   render();
 })();
 </script>
