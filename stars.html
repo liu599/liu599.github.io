@@ -16,7 +16,7 @@
     font-weight: 300;
     background: #fafafa;
   }
-  .wrap { max-width: 980px; margin: 0 auto; }
+  .wrap { max-width: 980px; margin: 0 auto; overflow-x: hidden; }
   h1 { color: #222; font-size: 30px; margin: 0 0 6px; line-height: 1.15; }
   h2 { color: #333; font-size: 20px; margin: 34px 0 14px; font-weight: 700; }
   a { color: #39c; font-weight: 400; text-decoration: none; }
@@ -55,15 +55,19 @@
   .cat-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
   .cat-head h2 { margin: 0; }
   .cat-count { font-size: 13px; color: #aaa; }
-  table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #eee; border-radius: 6px; overflow: hidden; }
+  table { width: 100%; max-width: 100%; table-layout: fixed; border-collapse: collapse; background: #fff; border: 1px solid #eee; border-radius: 6px; }
   th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
   th { background: #f7f7f7; color: #666; font-weight: 700; font-size: 12.5px; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: #f9fcff; }
-  td.repo { white-space: nowrap; font-weight: 400; }
-  td.lang { color: #888; font-size: 13px; white-space: nowrap; }
+  th:nth-child(1), td.repo { width: 24%; }
+  th:nth-child(2), td.lang { width: 12%; }
+  th:nth-child(3), td.stars { width: 8%; }
+  th:nth-child(4), td.desc { width: 56%; }
+  td.repo { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 400; }
+  td.lang { color: #888; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   td.stars { color: #999; font-size: 13px; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
-  td.desc { color: #666; font-size: 13.5px; }
+  td.desc { color: #666; font-size: 13.5px; white-space: normal; overflow-wrap: anywhere; word-break: break-word; line-height: 1.45; }
   .empty { color: #aaa; padding: 30px 0; text-align: center; }
   footer { margin-top: 50px; color: #aaa; font-size: 12px; text-align: center; }
   @media (max-width: 640px) {
